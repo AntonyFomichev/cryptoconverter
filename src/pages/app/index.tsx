@@ -42,6 +42,8 @@ const App = () => {
 
   /* When price changing, calculate price for number fields */
   useEffect(() => {
+    console.log(price);
+
     if (changedState.current === 'firstSymbol') {
       setFirstValue(calculatePrice('secondSymbol', secondValue));
     } else if (changedState.current === 'secondSymbol') {
@@ -151,6 +153,7 @@ const App = () => {
               value={firstValue}
               placeholder={'0'}
               min='0'
+              required={firstValue === ''}
             />
 
             <Select
@@ -158,12 +161,18 @@ const App = () => {
               name='firstSymbol'
               onChange={onChangeSelect}
               value={firstSymbolValue}
+              disabled={firstValue === ''}
             />
           </div>
         </div>
 
         <div className='converter-equals'>
-          <button onClick={debounce(swapFields, 300)}>=</button>
+          <button
+            onClick={debounce(swapFields, 300)}
+            disabled={firstValue === '' || secondValue === ''}
+          >
+            =
+          </button>
         </div>
 
         <div className='converter-side-b'>
@@ -175,6 +184,7 @@ const App = () => {
               value={secondValue}
               placeholder={'0'}
               min='0'
+              required={secondValue === ''}
             />
 
             <Select
@@ -182,6 +192,7 @@ const App = () => {
               name='secondSymbol'
               onChange={onChangeSelect}
               value={secondSymbolValue}
+              disabled={secondValue === ''}
             />
           </div>
         </div>
