@@ -1,11 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useShallowEqualSelector } from 'utils/hooks';
+import debounce from 'lodash.debounce';
+
+import { Select } from 'components/select';
+import { Input } from 'components/input';
 
 import { getCryptoPrice } from 'redux/actions/cryptoPrice';
 import { coinList } from 'utils/constants';
-import { StoreState } from 'types';
+import { useShallowEqualSelector } from 'utils/hooks';
 
+import { StoreState } from 'types';
 import './styles.sass';
 
 const App = () => {
@@ -31,11 +35,7 @@ const App = () => {
     (firstSymbolValue === 'ETH' && secondSymbolValue === 'BNB');
 
   useEffect(() => {
-    if (exchangeRule) {
-      getPriceBySymbols(`${secondSymbolValue}${firstSymbolValue}`);
-    } else {
-      getPriceBySymbols(`${firstSymbolValue}${secondSymbolValue}`);
-    }
+    getPriceBySymbols();
   }, [firstSymbolValue, secondSymbolValue]);
 
   useEffect(() => {
@@ -48,9 +48,19 @@ const App = () => {
     changedState.current = '';
   }, [price]);
 
-  const getPriceBySymbols = (query: string) => {
-    dispatch(getCryptoPrice(query));
-  };
+  function getPriceBySymbols() {
+    if (firstSymbolValue === secondSymbolValue) {
+      return;
+    }
+
+    dispatch(
+      getCryptoPrice(
+        exchangeRule
+          ? `${secondSymbolValue}${firstSymbolValue}`
+          : `${firstSymbolValue}${secondSymbolValue}`
+      )
+    );
+  }
 
   const onChangeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.name === 'firstSymbol') {
@@ -83,7 +93,6 @@ const App = () => {
   };
 
   const calculatePrice = (fieldName: string, fieldValue: string) => {
-    console.log(price);
     if (fieldName === 'firstSymbol') {
       return `${parseFloat(fieldValue) * parseFloat(price)}`;
     }
@@ -96,6 +105,15 @@ const App = () => {
 
     setFirstValue(secondValue);
     setSecondValue(tmpValue);
+  };
+
+  const swapFields = () => {
+    const tmpValue = firstSymbolValue;
+
+    setFirstSymbolValue(secondSymbolValue);
+    setSecondSymbolValue(tmpValue);
+
+    swapPriceFields();
   };
 
   const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +135,7 @@ const App = () => {
       <div className='converter-wrapper'>
         <div className='converter-side-a'>
           <div>
-            <input
+            <Input
               type='number'
               name='firstSymbol'
               onChange={onChangeInput}
@@ -127,26 +145,23 @@ const App = () => {
             />
 
             <span>
-              <select
+              <Select
+                options={coinList}
                 name='firstSymbol'
                 onChange={onChangeSelect}
                 value={firstSymbolValue}
-              >
-                {coinList.map((coin: string) => (
-                  <option key={coin}>{coin}</option>
-                ))}
-              </select>
+              />
             </span>
           </div>
         </div>
 
         <div className='converter-equals'>
-          <p>=</p>
+          <button onClick={debounce(swapFields, 300)}>=</button>
         </div>
 
         <div className='converter-side-b'>
           <div>
-            <input
+            <Input
               type='number'
               name='secondSymbol'
               onChange={onChangeInput}
@@ -156,15 +171,12 @@ const App = () => {
             />
 
             <span>
-              <select
+              <Select
+                options={coinList}
                 name='secondSymbol'
                 onChange={onChangeSelect}
                 value={secondSymbolValue}
-              >
-                {coinList.map((coin: string) => (
-                  <option key={coin}>{coin}</option>
-                ))}
-              </select>
+              />
             </span>
           </div>
         </div>
