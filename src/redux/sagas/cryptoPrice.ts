@@ -8,7 +8,6 @@ import { ActionTypes } from 'redux/literals';
 import { StoreAction } from 'types';
 
 function fetchPrice(symbol: string) {
-  console.log();
   return fetch(
     new Request(
       `https://api.binance.com/api/v3/ticker/price?symbol=` + symbol,

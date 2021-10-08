@@ -20,4 +20,17 @@ export type NarrowPlainObject<T> = Exclude<
 export interface ActionsMapReducer<State> {
   [type: string]: (draft: State, action: StoreAction) => any;
 }
+
 export type GenericFunction<T = any> = (...args: any[]) => T;
+
+export type UseInputType = {
+  type: string;
+  defaultValue?: string;
+  required?: boolean;
+  min: string;
+};
+
+export type UseSelectType = {
+  options: Array<string>;
+  defaultValue?: string;
+};

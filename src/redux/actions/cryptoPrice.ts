@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 /**
  * @module Actions/CryptoPrice
  * @desc CryptoPrice Actions
