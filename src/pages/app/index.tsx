@@ -5,7 +5,7 @@ import debounce from 'lodash.debounce';
 import { Select } from 'components/select';
 import { Input } from 'components/input';
 
-import { getCryptoPrice } from 'redux/actions/cryptoPrice';
+import { getCryptoPrice } from 'redux/actions';
 import { coinList } from 'utils/constants';
 import { useShallowEqualSelector } from 'utils/hooks';
 
@@ -18,6 +18,7 @@ const App = () => {
     cryptoPrice: { price },
   } = useShallowEqualSelector((s: StoreState) => s.cryptoPrice);
 
+  /* Variable for select value changed */
   const changedState = useRef('');
 
   /* Inputs */
@@ -34,10 +35,12 @@ const App = () => {
     (firstSymbolValue === 'BTC' && secondSymbolValue !== 'USDT') ||
     (firstSymbolValue === 'ETH' && secondSymbolValue === 'BNB');
 
+  /* When symbols changing, fetch price from Binance */
   useEffect(() => {
     getPriceBySymbols();
   }, [firstSymbolValue, secondSymbolValue]);
 
+  /* When price changing, calculate price for number fields */
   useEffect(() => {
     if (changedState.current === 'firstSymbol') {
       setFirstValue(calculatePrice('secondSymbol', secondValue));
@@ -48,6 +51,7 @@ const App = () => {
     changedState.current = '';
   }, [price]);
 
+  /* Fetch price */
   function getPriceBySymbols() {
     if (firstSymbolValue === secondSymbolValue) {
       return;
@@ -64,6 +68,7 @@ const App = () => {
 
   const onChangeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.name === 'firstSymbol') {
+      /* If one symbol equal changedField, swap them */
       if (e.target.value === secondSymbolValue) {
         swapPriceFields();
 
@@ -77,6 +82,7 @@ const App = () => {
     }
 
     if (e.target.name === 'secondSymbol') {
+      /* If one symbol equal changedField, swap them */
       if (e.target.value === firstSymbolValue) {
         swapPriceFields();
 
@@ -107,12 +113,15 @@ const App = () => {
     setSecondValue(tmpValue);
   };
 
-  const swapFields = () => {
+  const swapSymbolFields = () => {
     const tmpValue = firstSymbolValue;
 
     setFirstSymbolValue(secondSymbolValue);
     setSecondSymbolValue(tmpValue);
+  };
 
+  const swapFields = () => {
+    swapSymbolFields();
     swapPriceFields();
   };
 
@@ -144,14 +153,12 @@ const App = () => {
               min='0'
             />
 
-            <span>
-              <Select
-                options={coinList}
-                name='firstSymbol'
-                onChange={onChangeSelect}
-                value={firstSymbolValue}
-              />
-            </span>
+            <Select
+              options={coinList}
+              name='firstSymbol'
+              onChange={onChangeSelect}
+              value={firstSymbolValue}
+            />
           </div>
         </div>
 
@@ -170,14 +177,12 @@ const App = () => {
               min='0'
             />
 
-            <span>
-              <Select
-                options={coinList}
-                name='secondSymbol'
-                onChange={onChangeSelect}
-                value={secondSymbolValue}
-              />
-            </span>
+            <Select
+              options={coinList}
+              name='secondSymbol'
+              onChange={onChangeSelect}
+              value={secondSymbolValue}
+            />
           </div>
         </div>
       </div>

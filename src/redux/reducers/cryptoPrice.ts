@@ -1,3 +1,7 @@
+/**
+ * @module Reducers/CryptoPrice
+ * @desc CryptoPrice Reducers
+ */
 import { createReducer } from 'utils/helpers';
 import { ActionTypes, STATUS } from 'redux/literals';
 

@@ -1,6 +1,6 @@
 /**
  * @module Sagas/CryptoPrice
- * @desc CryptoPrice
+ * @desc CryptoPrice Sagas
  */
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 
@@ -9,12 +9,9 @@ import { StoreAction } from 'types';
 
 function fetchPrice(symbol: string) {
   return fetch(
-    new Request(
-      `https://api.binance.com/api/v3/ticker/price?symbol=` + symbol,
-      {
-        method: 'GET',
-      }
-    )
+    new Request(`${process.env.ENDPOINT}/ticker/price?symbol=` + symbol, {
+      method: 'GET',
+    })
   ).then((res) => res.json());
 }
 
